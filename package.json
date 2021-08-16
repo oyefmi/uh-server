@@ -1,0 +1,25 @@
+{
+  "name": "uh-server",
+  "version": "1.0.0",
+  "description": "Server for UH website",
+  "main": "script.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/oyefmi/uh-server.git"
+  },
+  "author": "Michael Oyefusi",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/oyefmi/uh-server/issues"
+  },
+  "homepage": "https://github.com/oyefmi/uh-server#readme",
+  "devDependencies": {
+    "nodemon": "^2.0.12"
+  },
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
