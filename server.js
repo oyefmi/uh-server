@@ -7,12 +7,14 @@ const router = express.Router();
 const app = express();
 
 const transport = nodemailer.createTransport({
-    host: "smtp.gmail.com",
-    port: 465,
+    host: "smtp.mailtrap.io",
+    port: 2525,
     auth: {
-    user: creds.USER,
-    pass: creds.PW
-  }
+        user: creds.USER,
+        pass: creds.PW
+  },
+  debug: true, // show debug output
+  logger: true // log information in console
 });
 
 transport.verify((error, success) => {
@@ -27,12 +29,12 @@ router.post('/send', (req, res, next) => {
     let name = req.body.name
     let email = req.body.email
     let phone = req.body.phoneNumber
-    let message = req.body.message
+    let message = req.body.description
     let content = `name: ${name} \n email: ${email} \n phone#: ${phone} \n message: ${message} `
 
     var mail = {
         from: email,
-        to: 'info.uptownhope@gmail.com',
+        to: '69ebe0e174-650eb6@inbox.mailtrap.io',
         subject:'New Message from Contact Form',
         text: content
     }
@@ -46,7 +48,7 @@ router.post('/send', (req, res, next) => {
     })
 })
 
-app.use('/', router)
-app.listen(3002)
-app.use(express.json())
 app.use(cors())
+app.use(express.json())
+app.use('/', router)
+app.listen(3001)
