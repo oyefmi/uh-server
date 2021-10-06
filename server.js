@@ -1,54 +1,78 @@
 const express = require('express');
+require('dotenv').config();
 const nodemailer = require('nodemailer');
+const { google } = require('googleapis');
 const cors = require('cors');
-const creds = require('./config');
 const router = express.Router();
 
 const app = express();
 
-const transport = nodemailer.createTransport({
-    host: "smtp.mailtrap.io",
-    port: 2525,
-    auth: {
-        user: creds.USER,
-        pass: creds.PW
-  },
-  debug: true, // show debug output
-  logger: true // log information in console
-});
+const createTransporter = async () => {
+    const OAuth2 = google.auth.OAuth2
+        const oAuthTwo = new OAuth2(
+            process.env.CLIENT_ID,
+            process.env.CLIENT_SECRET,
+            process.env.REDIRECT_URI
+    );
 
-transport.verify((error, success) => {
-    if (error) {
-        console.log(error);
-    } else {
-        console.log('Server is ready to take messages');
-    }
-});
+    oAuthTwo.setCredentials({
+        refresh_token: process.env.REFRESH_TOKEN
+    });
 
-router.post('/send', (req, res, next) => {
-    let name = req.body.name
-    let email = req.body.email
-    let phone = req.body.phoneNumber
-    let message = req.body.description
-    let content = `name: ${name} \n email: ${email} \n phone#: ${phone} \n message: ${message} `
+    const accessToken = oAuthTwo.getAccessToken();
 
-    var mail = {
-        from: email,
-        to: '69ebe0e174-650eb6@inbox.mailtrap.io',
-        subject:'New Message from Contact Form',
-        text: content
-    }
+    const transport = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            type: 'OAuth2',
+            user: process.env.EMAIL,
+            pass: process.env.PW,
+            clientId: process.env.CLIENT_ID,
+            clientSecret: process.env.CLIENT_SECRET,
+            refreshToken: process.env.REFRESH_TOKEN,
+            accessToken
+        },
+        debug: true, // show debug output
+        logger: true // log information in console
+    });
 
-    transport.sendMail(mail, (err, data) => {
-        if (err) {
-            res.json({ status: 'fail' })
+    transport.verify((error, success) => {
+        if (error) {
+            console.log(error);
         } else {
-            res.json({ status: 'success' })
+            console.log('Server is ready to take messages');
         }
+    });
+
+    router.post('/send', (req, res) => {
+        let name = req.body.name
+        let email = req.body.email
+        let phone = req.body.phoneNumber
+        let message = req.body.description
+        let content = `name: ${name} \nemail: ${email} \nphone#: ${phone} \nmessage: ${message} `
+    
+        let mail = {
+            from: email,
+            to: process.env.EMAIL,
+            subject:'New Message from Website Contact Form',
+            text: content
+        }
+    
+        transport.sendMail(mail, (err, data) => {
+            if (err) {
+                res.json({ status: 'fail' })
+            } else {
+                res.json({ status: 'success' })
+            }
+        })
     })
-})
+
+    return createTransporter;
+}
+
+createTransporter();
 
 app.use(cors())
 app.use(express.json())
 app.use('/', router)
-app.listen(3001)
+app.listen(3001) 
