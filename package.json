@@ -18,11 +18,11 @@
   },
   "homepage": "https://github.com/oyefmi/uh-server#readme",
   "devDependencies": {
-    "dotenv": "^10.0.0",
-    "googleapis": "^88.2.0",
     "nodemon": "^2.0.12"
   },
   "dependencies": {
+    "dotenv": "^10.0.0",
+    "googleapis": "^88.2.0",
     "cors": "^2.8.5",
     "debug": "^4.3.2",
     "express": "^4.17.1",
