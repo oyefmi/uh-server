@@ -3,12 +3,11 @@ require('dotenv').config();
 const nodemailer = require('nodemailer');
 const { google } = require('googleapis');
 const cors = require('cors');
+const { response } = require('express');
 const router = express.Router();
 const helmet = require('helmet');
 
 const app = express();
-
-app.use(helmet());
 
 const createTransporter = async () => {
     const OAuth2 = google.auth.OAuth2
@@ -40,14 +39,10 @@ const createTransporter = async () => {
     });
 
     transport.verify((error, success) => {
-        const debug = false;
-
-        if (debug) {
-            if (error) {
-                console.log(error);
-            } else {
-                console.log('Server is ready to take messages');
-            }
+        if (error) {
+            response.status(500);
+        } else {
+            response.status(200);
         }
     });
 
@@ -79,7 +74,14 @@ const createTransporter = async () => {
 
 createTransporter();
 
+app.use(helmet());
 app.use(cors());
 app.use(express.json());
 app.use('/', router);
+
+app.get('/', (req, res) => {
+    res.send('this is working')
+})
+
 app.listen(process.env.PORT || 3001);
+
