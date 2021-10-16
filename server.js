@@ -4,8 +4,11 @@ const nodemailer = require('nodemailer');
 const { google } = require('googleapis');
 const cors = require('cors');
 const router = express.Router();
+const helmet = require('helmet');
 
 const app = express();
+
+app.use(helmet());
 
 const createTransporter = async () => {
     const OAuth2 = google.auth.OAuth2
@@ -37,10 +40,14 @@ const createTransporter = async () => {
     });
 
     transport.verify((error, success) => {
-        if (error) {
-            console.log(error);
-        } else {
-            console.log('Server is ready to take messages');
+        const debug = false;
+
+        if (debug) {
+            if (error) {
+                console.log(error);
+            } else {
+                console.log('Server is ready to take messages');
+            }
         }
     });
 
@@ -72,7 +79,7 @@ const createTransporter = async () => {
 
 createTransporter();
 
-app.use(cors())
-app.use(express.json())
-app.use('/', router)
-app.listen(process.env.PORT || 3001) 
+app.use(cors());
+app.use(express.json());
+app.use('/', router);
+app.listen(process.env.PORT || 3001);
